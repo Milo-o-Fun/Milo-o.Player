@@ -1,0 +1,283 @@
+[gd_scene load_steps=14 format=3 uid="uid://djtdg4vhd4nis"]
+
+[ext_resource type="PackedScene" uid="uid://s8w6xinnt3ag" path="res://选集目录布局.tscn" id="1_6vs76"]
+[ext_resource type="PackedScene" uid="uid://cwuugoeflrsdj" path="res://标签目录布局.tscn" id="2_2vmfv"]
+
+[sub_resource type="GDScript" id="GDScript_ogpkw"]
+script/source = "@tool extends Control
+
+@export_global_file() var 视频路径
+@export var 播放 = false
+
+@onready var 播放器 = $\"播放器\"
+var 播放模式 = false
+
+@onready var 选集目录 = $\"控制面板/MarginC/VBoxC/中间区/选集目录\"
+@onready var 标签目录 = $\"控制面板/MarginC/VBoxC/中间区/标签目录\"
+
+@onready var 功能键盘 = $\"控制面板/MarginC/VBoxC/检查栏/功能键盘\"
+@onready var 启停键 = $\"控制面板/MarginC/VBoxC/检查栏/功能键盘/启停键\"
+@onready var 选集键 = $\"控制面板/MarginC/VBoxC/检查栏/功能键盘/选集键\"
+@onready var 标签键 = $\"控制面板/MarginC/VBoxC/检查栏/功能键盘/标签键\"
+
+func _ready():
+	播放 = true
+	pass
+	
+
+func _process(delta):
+	if 播放:
+		播放 = false
+		播放视频()
+	pass
+
+func 播放视频():
+	播放器.stream = 加载视频(视频路径)
+	播放器.paused = false
+	播放器.play()
+	
+	print(播放器.is_playing())
+
+func 加载视频(路径:String):
+	var 视频文件 = FileAccess.open(路径,FileAccess.READ)
+	if 视频文件:
+		
+		var video_stream = FFmpegVideoStream.new()
+		video_stream.set_file(路径)
+		return video_stream
+	else:
+		print(\"视频文件不存在\")
+
+
+
+func 启停操作():
+	if 播放器.paused:
+		播放器.paused = false
+		启停键.text = \"暂停\" ##
+	else:
+		播放器.paused = true
+		启停键.text = \"启动\" ## 
+
+
+func 选集功能():
+	功能键盘.visible = false
+	选集目录.visible = true
+	
+func 标签功能():
+	功能键盘.visible = false
+	标签目录.visible = true
+
+
+
+func 中空操作():
+	print(\"Hi\")
+	if 播放模式:
+		切换控板(true)
+		播放模式 = false
+	else:
+		if 功能键盘.visible:
+			切换控板(false)
+			播放模式 = true
+		else:
+			功能键盘.visible = true
+			选集目录.visible = false
+			标签目录.visible = false
+
+
+func 切换控板(显示:bool):
+	$\"控制面板/控制背板\".visible = 显示
+	$\"控制面板/MarginC/VBoxC/标题栏\".visible = 显示
+	$\"控制面板/MarginC/VBoxC/检查栏\".visible = 显示
+"
+
+[sub_resource type="FFmpegVideoStream" id="FFmpegVideoStream_s4ibq"]
+file = "E:/视频/遮天/遮天-第001集-HD1080P.mp4"
+
+[sub_resource type="Gradient" id="Gradient_0rc54"]
+offsets = PackedFloat32Array(0, 0.2, 0.75, 1)
+colors = PackedColorArray(0.197937, 0.197937, 0.197937, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0.196078, 0.196078, 0.196078, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_7hf3v"]
+gradient = SubResource("Gradient_0rc54")
+fill_to = Vector2(0, 1)
+
+[sub_resource type="Theme" id="Theme_ty0c2"]
+MarginContainer/constants/margin_bottom = 10
+MarginContainer/constants/margin_left = 10
+MarginContainer/constants/margin_right = 10
+MarginContainer/constants/margin_top = 10
+
+[sub_resource type="LabelSettings" id="LabelSettings_ohdan"]
+font_size = 30
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nmr7w"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_cu3ga"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_towli"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_qbbe2"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_ckvjq"]
+font_size = 25
+
+[node name="播放器布局" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_ogpkw")
+"视频路径" = "E:/视频/遮天/遮天-第001集-HD1080P.mp4"
+
+[node name="播放器" type="VideoStreamPlayer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stream = SubResource("FFmpegVideoStream_s4ibq")
+paused = true
+expand = true
+
+[node name="控制面板" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="控制背板" type="TextureRect" parent="控制面板"]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_7hf3v")
+
+[node name="MarginC" type="MarginContainer" parent="控制面板"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_ty0c2")
+
+[node name="VBoxC" type="VBoxContainer" parent="控制面板/MarginC"]
+layout_mode = 2
+
+[node name="标题栏" type="HBoxContainer" parent="控制面板/MarginC/VBoxC"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="控制面板/MarginC/VBoxC/标题栏"]
+layout_mode = 2
+text = "视频标题"
+label_settings = SubResource("LabelSettings_ohdan")
+
+[node name="中间区" type="HBoxContainer" parent="控制面板/MarginC/VBoxC"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="选集目录" parent="控制面板/MarginC/VBoxC/中间区" instance=ExtResource("1_6vs76")]
+layout_mode = 2
+
+[node name="中空区域" type="Button" parent="控制面板/MarginC/VBoxC/中间区"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/focus = SubResource("StyleBoxEmpty_nmr7w")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_cu3ga")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_towli")
+flat = true
+
+[node name="标签目录" parent="控制面板/MarginC/VBoxC/中间区" instance=ExtResource("2_2vmfv")]
+layout_mode = 2
+
+[node name="检查栏" type="VBoxContainer" parent="控制面板/MarginC/VBoxC"]
+layout_mode = 2
+
+[node name="时间面板" type="HBoxContainer" parent="控制面板/MarginC/VBoxC/检查栏"]
+layout_mode = 2
+
+[node name="VS00" type="VSeparator" parent="控制面板/MarginC/VBoxC/检查栏/时间面板"]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxEmpty_qbbe2")
+
+[node name="今时长标" type="Label" parent="控制面板/MarginC/VBoxC/检查栏/时间面板"]
+layout_mode = 2
+text = "0:00"
+label_settings = SubResource("LabelSettings_ckvjq")
+
+[node name="进度条" type="ProgressBar" parent="控制面板/MarginC/VBoxC/检查栏/时间面板"]
+custom_minimum_size = Vector2(0, 15)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+value = 57.0
+show_percentage = false
+
+[node name="总时长标" type="Label" parent="控制面板/MarginC/VBoxC/检查栏/时间面板"]
+layout_mode = 2
+text = "0:00"
+label_settings = SubResource("LabelSettings_ckvjq")
+
+[node name="VS02" type="VSeparator" parent="控制面板/MarginC/VBoxC/检查栏/时间面板"]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxEmpty_qbbe2")
+
+[node name="功能键盘" type="HBoxContainer" parent="控制面板/MarginC/VBoxC/检查栏"]
+layout_mode = 2
+
+[node name="选集键" type="Button" parent="控制面板/MarginC/VBoxC/检查栏/功能键盘"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "选集"
+
+[node name="上集键" type="Button" parent="控制面板/MarginC/VBoxC/检查栏/功能键盘"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "上集"
+
+[node name="下集键" type="Button" parent="控制面板/MarginC/VBoxC/检查栏/功能键盘"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "下集"
+
+[node name="VS00" type="VSeparator" parent="控制面板/MarginC/VBoxC/检查栏/功能键盘"]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/separator = SubResource("StyleBoxEmpty_qbbe2")
+
+[node name="启停键" type="Button" parent="控制面板/MarginC/VBoxC/检查栏/功能键盘"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "暂停"
+
+[node name="VS01" type="VSeparator" parent="控制面板/MarginC/VBoxC/检查栏/功能键盘"]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/separator = SubResource("StyleBoxEmpty_qbbe2")
+
+[node name="标签键" type="Button" parent="控制面板/MarginC/VBoxC/检查栏/功能键盘"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "标签"
+
+[connection signal="pressed" from="控制面板/MarginC/VBoxC/中间区/中空区域" to="." method="中空操作"]
+[connection signal="pressed" from="控制面板/MarginC/VBoxC/检查栏/功能键盘/选集键" to="." method="选集功能"]
+[connection signal="pressed" from="控制面板/MarginC/VBoxC/检查栏/功能键盘/启停键" to="." method="启停操作"]
+[connection signal="pressed" from="控制面板/MarginC/VBoxC/检查栏/功能键盘/标签键" to="." method="标签功能"]
