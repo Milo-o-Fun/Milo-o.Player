@@ -1,0 +1,77 @@
+[gd_scene load_steps=5 format=3 uid="uid://d2d6oh2dr1fes"]
+
+[ext_resource type="PackedScene" uid="uid://dnjjhodio20pb" path="res://asset/标签图标/跳中-图标.tscn" id="1_e1wp0"]
+
+[sub_resource type="GDScript" id="GDScript_2wck4"]
+script/source = "			##                ##########################
+######## ## ## #####    ##### # []
+## ## ## ## ## ## ##    ## ## # 2024-
+## ## ## ## ## ## ## ## ## ## # milo-o.fun@qq.com
+## ## ## ## ## #####    ##### ##########################
+
+## 
+@tool extends PanelContainer
+
+@export var update = false
+@export var change = false
+
+@export_enum(\"跳首\",\"跳中\",\"跳尾\") var 类型:String
+@onready var 跳首图标 = preload(\"res://asset/标签图标/跳首-图标.tscn\")
+@onready var 跳中图标 = preload(\"res://asset/标签图标/跳中-图标.tscn\")
+@onready var 跳尾图标 = preload(\"res://asset/标签图标/跳尾-图标.tscn\")
+
+func _ready():
+	pass
+
+func _process(delta):
+	if update:
+		update = false
+		
+	if change:
+		change = false
+"
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_un3wy"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_bgt6s"]
+font_size = 25
+
+[node name="标签项" type="PanelContainer"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 50.0
+grow_horizontal = 2
+script = SubResource("GDScript_2wck4")
+
+[node name="HBoxC" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="图标" parent="HBoxC" instance=ExtResource("1_e1wp0")]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+"边长" = 50
+
+[node name="VS00" type="VSeparator" parent="HBoxC"]
+layout_mode = 2
+theme_override_constants/separation = 10
+theme_override_styles/separator = SubResource("StyleBoxEmpty_un3wy")
+
+[node name="标文" type="Label" parent="HBoxC"]
+layout_mode = 2
+text = "片头跳过"
+label_settings = SubResource("LabelSettings_bgt6s")
+
+[node name="VS01" type="VSeparator" parent="HBoxC"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/separator = SubResource("StyleBoxEmpty_un3wy")
+
+[node name="时段" type="Label" parent="HBoxC"]
+layout_mode = 2
+text = "00:00 - 02:11"
+label_settings = SubResource("LabelSettings_bgt6s")
+
+[node name="VS02" type="VSeparator" parent="HBoxC"]
+layout_mode = 2
+theme_override_constants/separation = 10
+theme_override_styles/separator = SubResource("StyleBoxEmpty_un3wy")

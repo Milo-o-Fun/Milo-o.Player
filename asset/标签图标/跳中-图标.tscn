@@ -1,0 +1,62 @@
+[gd_scene load_steps=2 format=3 uid="uid://dnjjhodio20pb"]
+
+[sub_resource type="GDScript" id="GDScript_uj08m"]
+script/source = "			##                ##########################
+######## ## ## #####    ##### # []
+## ## ## ## ## ## ##    ## ## # 2024-
+## ## ## ## ## ## ## ## ## ## # milo-o.fun@qq.com
+## ## ## ## ## #####    ##### ##########################
+
+## 
+@tool extends Control
+
+@export var update = false
+
+@export var 边长 :int
+@export_range(0,1) var 框隔率 :float
+@export_range(0,1) var 凹凸率 :float
+
+@export var 颜色 :Color
+
+func _ready():
+	pass
+
+func _process(delta):
+	if update:
+		update = false
+		绘制()
+
+func 绘制():
+	custom_minimum_size = Vector2(边长,边长)
+	
+	var 主带基围 = size*(1-框隔率)
+	
+	var 插偏 = Vector2(0,1)*主带基围*凹凸率
+	var 旁偏 = -Vector2(0,1)*主带基围*凹凸率
+	var 标设置集 :Array = [
+		MP·绘图.金标设置类.new(1,插偏,Vector2(0,0)),
+		MP·绘图.金标设置类.new(4,插偏,旁偏)
+		]
+	var 主带点集 = MP·绘图.金标(主带基围,size*框隔率/2,标设置集)
+	$\"主带\".polygon = 主带点集
+	$\"主带\".color = 颜色
+"
+
+[node name="跳中-图标" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1052.0
+offset_bottom = -548.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_uj08m")
+"边长" = 100
+"框隔率" = 0.2
+"凹凸率" = 0.3
+"颜色" = Color(0.662745, 0.45098, 0.847059, 1)
+
+[node name="主带" type="Polygon2D" parent="."]
+color = Color(0.664875, 0.453215, 0.847954, 1)
+polygon = PackedVector2Array(10, 10, 50, 38.8, 90, 10, 90, 61.2, 50, 90, 10, 61.2)

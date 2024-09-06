@@ -1,9 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://cwuugoeflrsdj"]
+[gd_scene load_steps=3 format=3 uid="uid://cwuugoeflrsdj"]
 
 [ext_resource type="Theme" uid="uid://cnu0edy65pqcv" path="res://theme/标签目录-主题.tres" id="1_l4lpa"]
+[ext_resource type="PackedScene" uid="uid://d2d6oh2dr1fes" path="res://标签项.tscn" id="2_n33sm"]
 
 [node name="标签目录" type="Control"]
-visible = false
 custom_minimum_size = Vector2(280, 0)
 layout_mode = 3
 anchors_preset = 15
@@ -25,4 +25,7 @@ grow_vertical = 2
 layout_mode = 2
 
 [node name="VBoxC" type="VBoxContainer" parent="PanelC/MarginC"]
+layout_mode = 2
+
+[node name="HBoxContainer" parent="PanelC/MarginC/VBoxC" instance=ExtResource("2_n33sm")]
 layout_mode = 2
