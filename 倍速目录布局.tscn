@@ -1,0 +1,203 @@
+[gd_scene load_steps=5 format=3 uid="uid://brf2q0ily684m"]
+
+[ext_resource type="Theme" uid="uid://btxqhg77r1twc" path="res://theme/倍速目录-主题.tres" id="1_a75oy"]
+
+[sub_resource type="GDScript" id="GDScript_8sxnd"]
+script/source = "			##                ##########################
+######## ## ## #####    ##### # []
+## ## ## ## ## ## ##    ## ## # 2024-
+## ## ## ## ## ## ## ## ## ## # milo-o.fun@qq.com
+## ## ## ## ## #####    ##### ##########################
+
+## 
+@tool extends PanelContainer
+
+@export var update = false
+@export var change = false
+
+var 倍速列表 :Array[float]
+
+func _ready():
+	指令盘.visible = true
+	添加项.visible = false
+
+func _process(delta):
+	if update:
+		update = false
+		
+	if change:
+		change = false
+
+func 跳号更新():
+	pass
+
+
+@onready var 指令盘 = $\"MarginC/VBoxC/指令盘\"
+@onready var 添加项 = $\"MarginC/VBoxC/添加项\"
+@onready var 确定键 = $\"MarginC/VBoxC/添加项/MarginC/VBoxC/确定键\"
+@onready var 编辑块 = $\"MarginC/VBoxC/添加项/MarginC/VBoxC/编辑块\"
+
+func 添加倍速():
+	指令盘.visible = false
+	添加项.visible = true
+	编辑块.text = \"\"
+
+## 删除功能尚未实现
+func 删除倍速():
+	pass # Replace with function body.
+
+func 确定倍速():
+	指令盘.visible = true
+	添加项.visible = false
+	
+	if 编辑块.text:  加入列表(编辑块.text.to_float())
+	
+
+@onready var 倍速表 = $\"MarginC/VBoxC/倍速表\"
+
+func 加入列表(倍速:float):
+	if 倍速 <= 0: return
+	if !(1.0 in 倍速列表):
+		倍速列表.append(1.0)
+	if !(倍速 in 倍速列表):
+		倍速列表.append(倍速)
+		倍速列表.sort()
+		
+		for i in 倍速表.get_children():  i.queue_free()
+		
+		for b in 倍速列表:
+			var 倍速块 = PanelContainer.new()
+			var 倍速文 = Label.new()
+			倍速文.text = \"X\"+小数格式(b)
+			倍速文.horizontal_alignment = 1
+			
+			倍速块.add_child(倍速文)
+			倍速表.add_child(倍速块)
+
+func 小数格式(t:float):
+	if int(t) == t:  return str(t)+\".0\"
+	else:            return str(t)
+"
+
+[sub_resource type="LabelSettings" id="LabelSettings_52xka"]
+font_size = 40
+
+[sub_resource type="LabelSettings" id="LabelSettings_cdb7c"]
+font_size = 26
+
+[node name="倍速目录" type="PanelContainer"]
+custom_minimum_size = Vector2(280, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_a75oy")
+script = SubResource("GDScript_8sxnd")
+
+[node name="MarginC" type="MarginContainer" parent="."]
+layout_mode = 2
+
+[node name="VBoxC" type="VBoxContainer" parent="MarginC"]
+layout_mode = 2
+
+[node name="倍速表" type="VBoxContainer" parent="MarginC/VBoxC"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PanelC" type="PanelContainer" parent="MarginC/VBoxC/倍速表"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginC/VBoxC/倍速表/PanelC"]
+layout_mode = 2
+text = "X1.0
+"
+horizontal_alignment = 1
+
+[node name="指令盘" type="HBoxContainer" parent="MarginC/VBoxC"]
+layout_mode = 2
+
+[node name="添加键" type="Button" parent="MarginC/VBoxC/指令盘"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="MarginC/VBoxC/指令盘/添加键"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -11.5
+offset_top = -27.5
+offset_right = 11.5
+offset_bottom = 27.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "+"
+label_settings = SubResource("LabelSettings_52xka")
+vertical_alignment = 1
+
+[node name="删除键" type="Button" parent="MarginC/VBoxC/指令盘"]
+custom_minimum_size = Vector2(90, 50)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginC/VBoxC/指令盘/删除键"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -11.5
+offset_top = -27.5
+offset_right = 11.5
+offset_bottom = 27.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "×"
+label_settings = SubResource("LabelSettings_52xka")
+vertical_alignment = 1
+
+[node name="添加项" type="PanelContainer" parent="MarginC/VBoxC"]
+visible = false
+layout_mode = 2
+
+[node name="MarginC" type="MarginContainer" parent="MarginC/VBoxC/添加项"]
+layout_mode = 2
+
+[node name="VBoxC" type="VBoxContainer" parent="MarginC/VBoxC/添加项/MarginC"]
+layout_mode = 2
+
+[node name="编辑块" type="LineEdit" parent="MarginC/VBoxC/添加项/MarginC/VBoxC"]
+layout_mode = 2
+text = "1.2"
+placeholder_text = "输入倍速"
+alignment = 1
+virtual_keyboard_type = 3
+
+[node name="确定键" type="Button" parent="MarginC/VBoxC/添加项/MarginC/VBoxC"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginC/VBoxC/添加项/MarginC/VBoxC/确定键"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -11.5
+offset_top = -27.5
+offset_right = 11.5
+offset_bottom = 27.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "确认"
+label_settings = SubResource("LabelSettings_cdb7c")
+vertical_alignment = 1
+
+[connection signal="pressed" from="MarginC/VBoxC/指令盘/添加键" to="." method="添加倍速"]
+[connection signal="pressed" from="MarginC/VBoxC/指令盘/删除键" to="." method="删除倍速"]
+[connection signal="pressed" from="MarginC/VBoxC/添加项/MarginC/VBoxC/确定键" to="." method="确定倍速"]

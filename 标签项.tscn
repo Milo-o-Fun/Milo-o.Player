@@ -20,8 +20,15 @@ script/source = "			##                ##########################
 @onready var 跳中图标 = preload(\"res://asset/标签图标/跳中-图标.tscn\")
 @onready var 跳尾图标 = preload(\"res://asset/标签图标/跳尾-图标.tscn\")
 
+@onready var 图标 = $\"HBoxC/图标\"
+@onready var 标文 = $\"HBoxC/标文\"
+@onready var 时段 = $\"HBoxC/时段\"
+
+var 始时刻: int
+var 终时刻: int
+
 func _ready():
-	pass
+	图标.update = true
 
 func _process(delta):
 	if update:
@@ -49,6 +56,7 @@ layout_mode = 2
 [node name="图标" parent="HBoxC" instance=ExtResource("1_e1wp0")]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
+update = true
 "边长" = 50
 
 [node name="VS00" type="VSeparator" parent="HBoxC"]

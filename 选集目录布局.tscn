@@ -2,10 +2,9 @@
 
 [ext_resource type="Theme" uid="uid://cnu0edy65pqcv" path="res://theme/标签目录-主题.tres" id="1_2gqpu"]
 
-[node name="选集目录" type="Control"]
+[node name="选集目录" type="PanelContainer"]
 visible = false
 custom_minimum_size = Vector2(280, 0)
-layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -13,16 +12,8 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_2gqpu")
 
-[node name="PanelC" type="PanelContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="MarginC" type="MarginContainer" parent="PanelC"]
+[node name="MarginC" type="MarginContainer" parent="."]
 layout_mode = 2
 
-[node name="VBoxC" type="VBoxContainer" parent="PanelC/MarginC"]
+[node name="VBoxC" type="VBoxContainer" parent="MarginC"]
 layout_mode = 2

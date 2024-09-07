@@ -1,19 +1,22 @@
-[gd_scene load_steps=15 format=3 uid="uid://djtdg4vhd4nis"]
+[gd_scene load_steps=16 format=3 uid="uid://djtdg4vhd4nis"]
 
 [ext_resource type="PackedScene" uid="uid://s8w6xinnt3ag" path="res://选集目录布局.tscn" id="1_6vs76"]
 [ext_resource type="PackedScene" uid="uid://cwuugoeflrsdj" path="res://标签目录布局.tscn" id="2_2vmfv"]
+[ext_resource type="PackedScene" uid="uid://brf2q0ily684m" path="res://倍速目录布局.tscn" id="2_yoq10"]
 
 [sub_resource type="GDScript" id="GDScript_ogpkw"]
 script/source = "@tool extends Control
 
 @export_global_file() var 视频路径
-@export var 播放 = false
+@export var 开始播放 = false
 
 @onready var 播放器 = $\"播放器\"
 var 播放模式 = false
+var 播放倍数 = 10.0
 
 @onready var 选集目录 = $\"控制面板/MarginC/VBoxC/中间区/选集目录\"
 @onready var 标签目录 = $\"控制面板/MarginC/VBoxC/中间区/标签目录\"
+@onready var 倍速目录 = $\"控制面板/MarginC/VBoxC/中间区/倍速目录\"
 
 @onready var 功能键盘 = $\"控制面板/MarginC/VBoxC/检查栏/功能键盘\"
 @onready var 启停键 = $\"控制面板/MarginC/VBoxC/检查栏/功能键盘/启停键\"
@@ -23,18 +26,25 @@ var 播放模式 = false
 
 
 func _ready():
-	播放 = true
+	开始播放 = true
 	pass
 	
 
+var a = 0
 func _process(delta):
-	if 播放:
-		播放 = false
+	if 开始播放:
+		开始播放 = false
 		播放任务()
 		
 	if 播放器.is_playing():
+		## 倍数实现有问题
+		#if 播放倍数 != 1.0:
+			#var 调时长 = 今时长+delta*播放倍数
+			#if 调时长<总时长:  
+				#播放器.set_stream_position(调时长)
 		更新任务()
-		
+
+
 func _input(event):
 	if 进度点态 && event is InputEventMouseMotion:
 		var x = event.position.x
@@ -43,9 +53,8 @@ func _input(event):
 			播放器.set_stream_position(调时长)
 
 
-
-var 总时长 :int
-var 今时长 :int
+var 总时长 :float
+var 今时长 :float
 @onready var 进度条 = $\"控制面板/MarginC/VBoxC/检查栏/时间面板/进度条\"
 @onready var 进度点 = $\"控制面板/MarginC/VBoxC/检查栏/时间面板/进度条/进度点\"
 var 进度点态 = false
@@ -112,6 +121,8 @@ func 中空操作():
 			功能键盘.visible = true
 			选集目录.visible = false
 			标签目录.visible = false
+			倍速目录.visible = false
+
 
 
 func 切换控板(显示:bool):
@@ -119,7 +130,7 @@ func 切换控板(显示:bool):
 	$\"控制面板/MarginC/VBoxC/标题栏\".visible = 显示
 	$\"控制面板/MarginC/VBoxC/检查栏\".visible = 显示
 
-func 时间格式(总秒:int):
+func 时间格式(总秒:float):
 	var minutes = int(总秒) / 60
 	var seconds = int(总秒) % 60
 	return \"%02d:%02d\" % [minutes, seconds]
@@ -127,9 +138,22 @@ func 时间格式(总秒:int):
 
 func 进度调整·始():  进度点态 = true
 func 进度调整·终():  进度点态 = false
+
+
+
+func 倍速功能():
+	功能键盘.visible = false
+	倍速目录.visible = true
+
+var 时长差 : float
+func 倍速任务():
+	print(\"倍数 = \",播放倍数)
+	#var 调时长 = 今时长+时长差*播放倍数
+	#if 调时长<总时长:  
+		#播放器.set_stream_position(调时长)
 "
 
-[sub_resource type="FFmpegVideoStream" id="FFmpegVideoStream_m8hk2"]
+[sub_resource type="FFmpegVideoStream" id="FFmpegVideoStream_58h1i"]
 file = "E:/视频/遮天/遮天-第001集-HD1080P.mp4"
 
 [sub_resource type="Gradient" id="Gradient_0rc54"]
@@ -185,6 +209,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = SubResource("GDScript_ogpkw")
 "视频路径" = "E:/视频/遮天/遮天-第001集-HD1080P.mp4"
+"开始播放" = true
 
 [node name="播放器" type="VideoStreamPlayer" parent="."]
 layout_mode = 1
@@ -193,8 +218,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-stream = SubResource("FFmpegVideoStream_m8hk2")
+stream = SubResource("FFmpegVideoStream_58h1i")
 expand = true
+
+[node name="倍数器" type="Timer" parent="."]
 
 [node name="控制面板" type="Control" parent="."]
 layout_mode = 1
@@ -249,7 +276,13 @@ theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_cu3ga")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_towli")
 flat = true
 
+[node name="倍速目录" parent="控制面板/MarginC/VBoxC/中间区" instance=ExtResource("2_yoq10")]
+visible = false
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+
 [node name="标签目录" parent="控制面板/MarginC/VBoxC/中间区" instance=ExtResource("2_2vmfv")]
+visible = false
 layout_mode = 2
 
 [node name="检查栏" type="VBoxContainer" parent="控制面板/MarginC/VBoxC"]
@@ -266,7 +299,7 @@ theme_override_styles/separator = SubResource("StyleBoxEmpty_qbbe2")
 
 [node name="今时标" type="Label" parent="控制面板/MarginC/VBoxC/检查栏/时间面板"]
 layout_mode = 2
-text = "05:05"
+text = "00:16"
 label_settings = SubResource("LabelSettings_ckvjq")
 
 [node name="VS01" type="VSeparator" parent="控制面板/MarginC/VBoxC/检查栏/时间面板"]
@@ -280,7 +313,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 max_value = 1420.35
-value = 305.24
+value = 16.95
 show_percentage = false
 
 [node name="进度点" type="Button" parent="控制面板/MarginC/VBoxC/检查栏/时间面板/进度条"]
@@ -289,9 +322,9 @@ layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_left = -20.0
+offset_left = -3.49433
 offset_top = -15.0
-offset_right = 10.0
+offset_right = 26.5066
 offset_bottom = 15.0
 grow_vertical = 2
 script = SubResource("GDScript_xe2qw")
@@ -350,15 +383,23 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/separator = SubResource("StyleBoxEmpty_qbbe2")
 
+[node name="倍速键" type="Button" parent="控制面板/MarginC/VBoxC/检查栏/功能键盘"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "倍速"
+
 [node name="标签键" type="Button" parent="控制面板/MarginC/VBoxC/检查栏/功能键盘"]
 custom_minimum_size = Vector2(80, 80)
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
 text = "标签"
 
+[connection signal="timeout" from="倍数器" to="." method="倍数任务"]
 [connection signal="pressed" from="控制面板/MarginC/VBoxC/中间区/中空区域" to="." method="中空操作"]
 [connection signal="button_down" from="控制面板/MarginC/VBoxC/检查栏/时间面板/进度条/进度点" to="." method="进度调整·始"]
 [connection signal="button_up" from="控制面板/MarginC/VBoxC/检查栏/时间面板/进度条/进度点" to="." method="进度调整·终"]
 [connection signal="pressed" from="控制面板/MarginC/VBoxC/检查栏/功能键盘/选集键" to="." method="选集功能"]
 [connection signal="pressed" from="控制面板/MarginC/VBoxC/检查栏/功能键盘/启停键" to="." method="启停操作"]
+[connection signal="pressed" from="控制面板/MarginC/VBoxC/检查栏/功能键盘/倍速键" to="." method="倍速功能"]
 [connection signal="pressed" from="控制面板/MarginC/VBoxC/检查栏/功能键盘/标签键" to="." method="标签功能"]

@@ -1,31 +1,84 @@
-[gd_scene load_steps=3 format=3 uid="uid://cwuugoeflrsdj"]
+[gd_scene load_steps=5 format=3 uid="uid://cwuugoeflrsdj"]
 
 [ext_resource type="Theme" uid="uid://cnu0edy65pqcv" path="res://theme/标签目录-主题.tres" id="1_l4lpa"]
 [ext_resource type="PackedScene" uid="uid://d2d6oh2dr1fes" path="res://标签项.tscn" id="2_n33sm"]
 
-[node name="标签目录" type="Control"]
+[sub_resource type="GDScript" id="GDScript_8sxnd"]
+script/source = "			##                ##########################
+######## ## ## #####    ##### # []
+## ## ## ## ## ## ##    ## ## # 2024-
+## ## ## ## ## ## ## ## ## ## # milo-o.fun@qq.com
+## ## ## ## ## #####    ##### ##########################
+
+## 
+@tool extends PanelContainer
+
+@export var update = false
+@export var change = false
+
+var 跳号 :int ## 直接判断是否跳过
+
+func _ready():
+	pass
+
+func _process(delta):
+	if update:
+		update = false
+		
+	if change:
+		change = false
+
+func 跳号更新():
+	pass
+
+func 添加标签():
+	pass # Replace with function body.
+"
+
+[sub_resource type="LabelSettings" id="LabelSettings_52xka"]
+font_size = 40
+
+[node name="标签目录" type="PanelContainer"]
 custom_minimum_size = Vector2(280, 0)
-layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_l4lpa")
+script = SubResource("GDScript_8sxnd")
 
-[node name="PanelC" type="PanelContainer" parent="."]
+[node name="MarginC" type="MarginContainer" parent="."]
+layout_mode = 2
+
+[node name="VBoxC" type="VBoxContainer" parent="MarginC"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginC/VBoxC"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBoxContainer" parent="MarginC/VBoxC/VBoxContainer" instance=ExtResource("2_n33sm")]
+layout_mode = 2
+
+[node name="添加键" type="Button" parent="MarginC/VBoxC"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginC/VBoxC/添加键"]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -27.0
+offset_right = 3.0
+offset_bottom = 28.0
 grow_horizontal = 2
 grow_vertical = 2
+text = "+"
+label_settings = SubResource("LabelSettings_52xka")
 
-[node name="MarginC" type="MarginContainer" parent="PanelC"]
-layout_mode = 2
-
-[node name="VBoxC" type="VBoxContainer" parent="PanelC/MarginC"]
-layout_mode = 2
-
-[node name="HBoxContainer" parent="PanelC/MarginC/VBoxC" instance=ExtResource("2_n33sm")]
-layout_mode = 2
+[connection signal="pressed" from="MarginC/VBoxC/添加键" to="." method="添加标签"]
